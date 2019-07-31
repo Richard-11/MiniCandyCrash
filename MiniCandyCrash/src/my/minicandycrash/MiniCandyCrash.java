@@ -1,6 +1,8 @@
 package my.minicandycrash;
 
 import java.util.Scanner;
+import static java.lang.Math.random;
+import static java.lang.Math.floor;
 
 /**
  * Juego que consiste en ir haciendo desaparecer tres bloques de 3 o más
@@ -51,16 +53,27 @@ import java.util.Scanner;
  * 
  * - En cualquier momento del juego, el jugador puede terminar, insertando como jugada 0 0 0 0.
  *   La puntuación será la alcanzada hasta ese momento.
+ *   
+ * OBSERVACIONES SOBRE EL PROGRAMA
+ * - El tablero no debe presentar bloques cuando el jugador vaya a realizar un movimiento.
+ * 
+ * - El tablero siempre debe tener alguna jugada posible.
  * 
  * 
  * @author Richard Albán Fernández
  *
  */
+
 public class MiniCandyCrash {
 
+	final static int FILAS = 9;
+	final static int COLUMNAS = 9; 
+	
 	public static void main(String[] args) {
 		
 		int modo;
+		int colores = 0;
+		boolean tableroFijo = false;
 		Scanner teclado = new Scanner(System.in);
 		
 		do {
@@ -79,15 +92,23 @@ public class MiniCandyCrash {
 			switch(modo) {
 				case 1:
 					System.out.println("Has seleccionado el Tablero Fácil.");
+					colores = 3;
+					tableroFijo = false;
 					break;
 				case 2: 
 					System.out.println("Has seleccionado el Tablero Intermedio.");
+					colores = 4;
+					tableroFijo = false;
 					break;
 				case 3: 
 					System.out.println("Has seleccionado el Tablero Difícil.");
+					colores = 5;
+					tableroFijo = false;
 					break;
 				case 4: 
 					System.out.println("Has seleccionado el Tablero fijo.");
+					colores = 3;
+					tableroFijo = true;
 					break;
 				case 0: 
 					System.out.println("¡Hasta la próxima!");
@@ -96,11 +117,145 @@ public class MiniCandyCrash {
 					System.out.println("Por favor, seleccione una opción válida.");
 			}
 			
+			System.out.println();
+			
+			if(modo == 1 || modo == 2 || modo == 3 || modo == 4) {
+				jugar(colores, tableroFijo);
+			}
+			
 			System.out.println("\n");
 			
 		} while(modo != 0);
 		
 		teclado.close();
+	}
+
+	private static void jugar(int colores, boolean tableroFijo) {
+		int[][] tablero = {{2, 1, 1, 1, 1, 1, 1, 1, 1},
+						   {1, 2, 2, 2, 1, 2, 2, 2, 1},
+						   {3, 2, 3, 3, 3, 1, 3, 3, 3},
+						   {1, 1, 1, 1, 1, 1, 1, 1, 1},
+						   {2, 2, 2, 2, 1, 2, 2, 1, 3},
+						   {3, 3, 3, 3, 3, 3, 3, 3, 1},
+						   {1, 1, 2, 1, 3, 1, 1, 1, 1},
+						   {2, 2, 1, 2, 2, 2, 2, 1, 2},
+						   {3, 2, 1, 3, 3, 3, 3, 3, 1}};
+		
+		if(!tableroFijo) {
+			boolean tableroValido = false;
+			
+			//while(!tableroValido) {
+				tablero = crearTableroAleatorio(colores);
+				//tableroValido = comprobarSiTableroEsValido(tablero);
+			//}
+		}
+		
+		imprimirTablero(tablero);
+	}
+
+	/**
+	 * Imprime por consola el tablero de juego.
+	 * 
+	 * @param tablero tablero a imprimir
+	 */
+	private static void imprimirTablero(int[][] tablero) {
+		
+		System.out.print("   ");
+		
+		for(int i = 0; i < tablero.length; i++) {
+			System.out.printf("%3d", i + 1);
+		}
+		
+		System.out.println("\n");
+		
+		for(int i = 0; i < tablero.length; i++) {
+			System.out.printf("%2d  ", tablero.length - i);
+			
+			for(int j = 0; j < tablero[0].length; j++) {
+				System.out.printf("%2c ", convertirEnteroASimbolo(tablero[i][j]));
+			}
+			
+			System.out.println();
+		}
+	}
+
+	/**
+	 * Convierte un entero a un símbolo. Para este juego, hay un máximo de 5 símbolos.
+	 * 
+	 * @param entero entero a convertir
+	 * @return simbolo
+	 */
+	private static char convertirEnteroASimbolo(int entero) {
+		char simbolo = ' ';
+		
+		switch(entero) {
+		case 1: 
+			simbolo = 'o';
+			break;
+		case 2: 
+			simbolo = '*';
+			break;
+		case 3: 
+			simbolo = '=';
+			break;
+		case 4: 
+			simbolo = '%';
+			break;
+		case 5:
+			simbolo = '&';
+			break;
+		}
+		
+		return simbolo;
+	}
+
+	/**
+	 * Devuelve un valor {@code boolean}, que será {@code true} o {@code false}, dependiendo de si el tablero se ajusta 
+	 * a las condiciones del enunciado.
+	 * 
+	 * @param tablero tablero a comprobar
+	 * @return {@code true} si el tablero se ajusta a las condiciones del enunciado, y {@code false} en caso contrario.
+	 */
+	private static boolean comprobarSiTableroEsValido(int[][] tablero) {
+		return false;
+	}
+
+	/**
+	 * Devuelve un tablero que contiene números enteros aleatorios.
+	 * 
+	 * @param colores colores que tiene el tablero
+	 * @return tablero con números enteros aleatorios
+	 */
+	private static int[][] crearTableroAleatorio(int colores) {
+		int[][] tableroAleatorio = new int[FILAS][COLUMNAS];
+		
+		for(int i = 0; i < tableroAleatorio.length; i++) {
+			for(int j = 0; j < tableroAleatorio[0].length; j++) {
+				tableroAleatorio[i][j] = generarNumeroAleatorio(1, colores);
+			}
+		}
+		
+		return tableroAleatorio;
+	}
+
+	/**
+	 * Devuelve un número entero aleatorio comprendindo entre {@code numero1} y {@code numero2}, 
+	 * ambos incluidos.
+	 * 
+	 * @param numero1 el primer valor
+	 * @param numero2 el segundo valor
+	 * @return {@code int} entre {@code numero1} y {@code numero2}
+	 */
+	private static int generarNumeroAleatorio(int numero1, int numero2) {
+		int aux;
+		
+		if(numero1 > numero2) {
+			aux = numero1;
+			numero1 = numero2;
+			numero2 = aux;
+		}
+		
+		return (int) floor(random() * (numero2 - numero1 + 1) + numero1);
 	}
 
 }
