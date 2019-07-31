@@ -1,5 +1,7 @@
 package my.minicandycrash;
 
+import java.util.Scanner;
+
 /**
  * Juego que consiste en ir haciendo desaparecer tres bloques de 3 o más
  * bolas contiguas verticalmente de un mismo color de un tablero. Para ello, el jugador puede 
@@ -57,7 +59,48 @@ package my.minicandycrash;
 public class MiniCandyCrash {
 
 	public static void main(String[] args) {
+		
+		int modo;
+		Scanner teclado = new Scanner(System.in);
+		
+		do {
+			System.out.println("---------- MINI_CANDY_CRASH ----------\n");
+			System.out.println("Elija tipo de tablero:");
+			System.out.println("   1. Fácil");
+			System.out.println("   2. Intermedio");
+			System.out.println("   3. Difícil");
+			System.out.println("   4. Tablero fijo");
+			System.out.println("   0. Salir");
 
+			modo = teclado.nextInt();
+			
+			System.out.println();
+			
+			switch(modo) {
+				case 1:
+					System.out.println("Has seleccionado el Tablero Fácil.");
+					break;
+				case 2: 
+					System.out.println("Has seleccionado el Tablero Intermedio.");
+					break;
+				case 3: 
+					System.out.println("Has seleccionado el Tablero Difícil.");
+					break;
+				case 4: 
+					System.out.println("Has seleccionado el Tablero fijo.");
+					break;
+				case 0: 
+					System.out.println("¡Hasta la próxima!");
+					break;
+				default:
+					System.out.println("Por favor, seleccione una opción válida.");
+			}
+			
+			System.out.println("\n");
+			
+		} while(modo != 0);
+		
+		teclado.close();
 	}
 
 }
