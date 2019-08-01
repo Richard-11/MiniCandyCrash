@@ -144,10 +144,10 @@ public class MiniCandyCrash {
 		if(!tableroFijo) {
 			boolean tableroValido = false;
 			
-			//while(!tableroValido) {
+			while(!tableroValido) {
 				tablero = crearTableroAleatorio(colores);
-				//tableroValido = comprobarSiTableroEsValido(tablero);
-			//}
+				tableroValido = comprobarSiTableroEsValido(tablero);
+			}
 		}
 		
 		imprimirTablero(tablero);
@@ -211,13 +211,145 @@ public class MiniCandyCrash {
 
 	/**
 	 * Devuelve un valor {@code boolean}, que será {@code true} o {@code false}, dependiendo de si el tablero se ajusta 
-	 * a las condiciones del enunciado.
+	 * a las condiciones del enunciado. Se comprueba que el tablero no presenta ningún bloque y que existe alguna jugada
+	 * posible.
 	 * 
 	 * @param tablero tablero a comprobar
 	 * @return {@code true} si el tablero se ajusta a las condiciones del enunciado, y {@code false} en caso contrario.
 	 */
 	private static boolean comprobarSiTableroEsValido(int[][] tablero) {
-		return false;
+		boolean hayBloque = false;
+		boolean hayJugada = false;
+		boolean tableroValido = false;
+		
+		// Se comprueba que el tablero no presenta ningún bloque
+		for(int i = 0; i < tablero.length - 2 & !hayBloque; i++) {
+			for(int j = 0; j < tablero[0].length & !hayBloque; j++) {
+				if(tablero[i][j] == tablero[i + 1][j] & tablero[i][j] == tablero[i + 2][j]) {
+					hayBloque = true;
+				}
+			}
+		}
+		
+		// Se comprueba que existe alguna jugada posible
+		for(int i = 0; i < tablero.length & !hayJugada; i++) {
+			for(int j = 0; j < tablero[0].length & !hayJugada; j++) {
+				
+				// Borde superior
+				if(i == 0) {
+					if(j == 0) {
+						if(tablero[i][j] == tablero[i + 1][j + 1] &&  tablero[i][j] == tablero[i + 2][j + 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j + 1] && tablero[i][j] == tablero[i + 2][j]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j] && tablero[i][j] == tablero[i + 2][j + 1]) {
+							hayJugada = true;
+						}
+					} else if(j == tablero.length - 1) {
+						if(tablero[i][j] == tablero[i + 1][j - 1] &&  tablero[i][j] == tablero[i + 2][j - 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j - 1] && tablero[i][j] == tablero[i + 2][j]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j] && tablero[i][j] == tablero[i + 2][j - 1]) {
+							hayJugada = true;
+						}
+					} else {
+						if(tablero[i][j] == tablero[i + 1][j - 1] && tablero[i][j] == tablero[i + 2][j - 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j + 1] && tablero[i][j] == tablero[i + 2][j + 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j - 1] && tablero[i][j] == tablero[i + 2][j]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j + 1] && tablero[i][j] == tablero[i + 2][j]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j] && tablero[i][j] == tablero[i + 2][j - 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i + 1][j] && tablero[i][j] == tablero[i + 2][j + 1]) {
+							hayJugada = true;
+						}
+					}
+				}
+				// Borde inferior
+				else if(i == tablero[0].length - 1) {
+					if(j == 0) {
+						if(tablero[i][j] == tablero[i - 1][j + 1] &&  tablero[i][j] == tablero[i - 2][j + 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j + 1] && tablero[i][j] == tablero[i - 2][j]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j] && tablero[i][j] == tablero[i - 2][j + 1]) {
+							hayJugada = true;
+						}
+					} else if(j == tablero.length - 1) {
+						if(tablero[i][j] == tablero[i - 1][j - 1] &&  tablero[i][j] == tablero[i - 2][j - 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j - 1] && tablero[i][j] == tablero[i - 2][j]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j] && tablero[i][j] == tablero[i - 2][j - 1]) {
+							hayJugada = true;
+						}
+					} else {
+						if(tablero[i][j] == tablero[i - 1][j - 1] && tablero[i][j] == tablero[i - 2][j - 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j + 1] && tablero[i][j] == tablero[i - 2][j + 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j - 1] && tablero[i][j] == tablero[i - 2][j]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j + 1] && tablero[i][j] == tablero[i - 2][j]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j] && tablero[i][j] == tablero[i - 2][j - 1]) {
+							hayJugada = true;
+						}
+						else if(tablero[i][j] == tablero[i - 1][j] && tablero[i][j] == tablero[i - 2][j + 1]) {
+							hayJugada = true;
+						}
+					}
+				}
+				// Borde izquierdo
+				else if(j == 0) {
+					if(tablero[i][j] == tablero[i - 1][j + 1] && tablero[i][j] == tablero[i + 1][j + 1]) {
+						hayJugada = true;
+					}
+				}
+				// Borde derecho
+				else if(j == tablero.length - 1) {
+					if(tablero[i][j] == tablero[i - 1][j - 1] && tablero[i][j] == tablero[i + 1][j - 1]) {
+						hayJugada = true;
+					}
+				}
+				// Interior
+				else {
+					if(tablero[i][j] == tablero[i - 1][j - 1] && tablero[i][j] == tablero[i + 1][j - 1])  {
+						hayJugada = true;
+					}
+					else if(tablero[i][j] == tablero[i - 1][j + 1] && tablero[i][j] == tablero[i + 1][j + 1]) {
+						hayJugada = true;
+					}
+				}
+			}
+		}
+		
+		if (!hayBloque && hayJugada) {
+			tableroValido = true;
+		}
+		
+		return tableroValido;
 	}
 
 	/**
