@@ -120,7 +120,7 @@ public class MiniCandyCrash {
 			System.out.println();
 			
 			if(modo == 1 || modo == 2 || modo == 3 || modo == 4) {
-				jugar(colores, tableroFijo);
+				jugar(teclado, colores, tableroFijo);
 			}
 			
 			System.out.println("\n");
@@ -130,7 +130,16 @@ public class MiniCandyCrash {
 		teclado.close();
 	}
 
-	private static void jugar(int colores, boolean tableroFijo) {
+	/**
+	 * Realiza todas las operaciones que afectan a la partida.
+	 * 
+	 * @param teclado lee entradas por teclado
+	 * @param colores colores del tablero
+	 * @param tableroFijo determina si el tablero debe ser el fijo o no
+	 */
+	private static void jugar(Scanner teclado, int colores, boolean tableroFijo) {
+		int filaInicio, columnaInicio, filaFin, columnaFin;
+		
 		int[][] tablero = {{2, 1, 1, 1, 1, 1, 1, 1, 1},
 						   {1, 2, 2, 2, 1, 2, 2, 2, 1},
 						   {3, 2, 3, 3, 3, 1, 3, 3, 3},
@@ -149,9 +158,173 @@ public class MiniCandyCrash {
 				tableroValido = comprobarSiTableroEsValido(tablero);
 			}
 		}
-		System.out.println(tablero.length);
-		System.out.println(tablero[0].length);
+		
 		imprimirTablero(tablero);
+		
+		// TODO poner bien condición del while. Imprimir el turno de juego.
+		while (true) {
+			do {
+				System.out.print("\nIntroduzca un movimiento (FilaInicio ColumnaInicio FilaFin ColumnaFin): ");
+				filaInicio = traducirFila(teclado.nextInt());
+				columnaInicio = traducirColumna(teclado.nextInt());
+				filaFin = traducirFila(teclado.nextInt());
+				columnaFin = traducirColumna(teclado.nextInt());
+			} while(!comprobarSiMovimientoEsValido(filaInicio, columnaInicio, filaFin, columnaFin));
+
+		
+			hacerMovimiento(tablero, filaInicio, columnaInicio, filaFin, columnaFin);
+			imprimirTablero(tablero);
+		}
+	}
+
+	/**
+	 * Intercambia la posicion del tablero de cordenadas {@code filaInicio} y {@code columnaInicio} con las coordenadas
+	 * de {@code filaFin} y {@code columnaFin}.
+	 * 
+	 * @param tablero tablero en el que se realiza el cambio
+	 * @param filaInicio fila inicial
+	 * @param columnaInicio columna inicial
+	 * @param filaFin fila final
+	 * @param columnaFin columna final
+	 */
+	private static void hacerMovimiento(int[][] tablero, int filaInicio, int columnaInicio, int filaFin,
+			int columnaFin) {
+		int aux;
+		
+		aux = tablero[filaInicio][columnaInicio];
+		tablero[filaInicio][columnaInicio] = tablero[filaFin][columnaFin];
+		tablero[filaFin][columnaFin] = aux;
+	}
+
+	/**
+	 * Se comprueba si el movimiento a realizar es válido teniendo en cuenta las condiciones del enunciado. 
+	 * Se comprueba que las filas y columnas no superen los límites del tablero, que no se pueda realizar un 
+	 * movimiento hasta la misma posición y que los movimientos solo puedan ser contiguos, vertical u horizontalmente.
+	 * @param filaInicio fila inicial
+	 * @param columnaInicio columna inicial
+	 * @param filaFin fila final
+	 * @param columnaFin columna final
+	 * 
+	 * @return {@code true} si el movimiento es válido y {@code false} si no lo es
+	 */
+	private static boolean comprobarSiMovimientoEsValido(int filaInicio, int columnaInicio, int filaFin, int columnaFin) {
+		boolean movimientoValido = false;
+		
+		if((filaInicio < 0 || filaInicio >= FILAS) || (columnaInicio < 0 || columnaInicio >= COLUMNAS) ||
+				(filaFin < 0 || filaFin >= FILAS) || (columnaFin < 0 || columnaFin >= COLUMNAS)) {
+			movimientoValido = false;
+			System.out.println("Coordenadas fuera de limites.");
+		}
+		// Si las coordenadas iniciales son iguales que las coordenadas finales
+		else if(filaInicio == filaFin && columnaInicio == columnaFin) {
+			movimientoValido = false;
+			System.out.println("mismas Coordenadas .");
+
+		}
+		// Borde superior
+		else if(filaInicio == 0) {
+			System.out.println("problema borde superior.");
+
+			if(columnaInicio == 0) {
+				if((filaFin == filaInicio + 1 && columnaFin == columnaInicio) || 
+						(filaFin == filaInicio && columnaFin == columnaInicio + 1)) {
+					movimientoValido = true;
+				}
+			}
+			else if(columnaInicio == COLUMNAS - 1) {
+				if((filaFin == filaInicio + 1 && columnaFin == columnaInicio) || 
+						(filaFin == filaInicio && columnaFin == columnaInicio - 1)) {
+					movimientoValido = true;
+				}
+			}
+			else {
+				if((filaFin == filaInicio && columnaFin == columnaInicio - 1) || 
+						(filaFin == filaInicio && columnaFin == columnaInicio + 1) ||
+						(filaFin == filaInicio + 1 && columnaFin == columnaInicio)) {
+					movimientoValido = true;
+				}
+			}
+		}
+		// Borde inferior
+		else if(filaInicio == FILAS - 1) {
+			System.out.println("problema borde inferior.");
+
+			if(columnaInicio == 0) {
+				if((filaFin == filaInicio - 1 && columnaFin == columnaInicio) || 
+						(filaFin == filaInicio && columnaFin == columnaInicio + 1)) {
+					movimientoValido = true;
+				}
+			}
+			else if(columnaInicio == COLUMNAS - 1) {
+				if((filaFin == filaInicio - 1 && columnaFin == columnaInicio) || 
+						(filaFin == filaInicio && columnaFin == columnaInicio - 1)) {
+					movimientoValido = true;
+				}
+			}
+			else {
+				if((filaFin == filaInicio && columnaFin == columnaInicio - 1) || 
+						(filaFin == filaInicio && columnaFin == columnaInicio + 1) ||
+						(filaFin == filaInicio - 1 && columnaFin == columnaInicio)) {
+					movimientoValido = true;
+				}
+			}
+		}
+		// Borde izquierdo
+		else if(columnaInicio == 0) {
+			System.out.println("problema borde izquierdo.");
+
+			if((filaFin == filaInicio && columnaFin == columnaInicio + 1) || 				
+					(filaFin == filaInicio - 1 && columnaFin == columnaInicio) ||
+					(filaFin == filaInicio + 1 && columnaFin == columnaInicio)) {
+				movimientoValido = true;
+			}
+		}
+		// Borde derecho
+		else if(columnaInicio == COLUMNAS - 1) {
+			System.out.println("problema borde derecho.");
+
+			if((filaFin == filaInicio && columnaFin == columnaInicio - 1) || 				
+					(filaFin == filaInicio - 1 && columnaFin == columnaInicio) ||
+					(filaFin == filaInicio + 1 && columnaFin == columnaInicio)) {
+				movimientoValido = true;
+			}
+		}
+		else {
+			if((filaInicio == filaFin - 1 && columnaInicio == columnaFin) ||
+					(filaInicio == filaFin + 1 && columnaInicio == columnaFin) ||
+					(filaInicio == filaFin && columnaInicio == columnaFin - 1) ||
+					(filaInicio == filaFin && columnaInicio == columnaInicio + 1)) {
+				movimientoValido = true;
+			}
+		}
+		
+		if(!movimientoValido) {
+			System.out.println("Movimiento inválido. Tiene que volver a introducir las coordenadas.");
+		}
+		
+		return movimientoValido;
+	}
+
+	/**
+	 * Devuelve el verdadero valor de la fila, que es distinto del valor que aparece representado en el tablero y es
+	 * con el que se trabaja internamente.
+	 * 
+	 * @param fila fila a traducir
+	 * @return valor de la fila traducido a su verdadero valor
+	 */
+	private static int traducirFila(int fila) {
+		return FILAS - fila;
+	}
+
+	/**
+	 * Devuelve el verdadero valor de la columna, que es distinto del valor que aparece representado en el tablero y es
+	 * con el que se trabaja internamente.
+	 * 
+	 * @param columna columna a traducir
+	 * @return valor de la columna traducido a su verdadero valor
+	 */
+	private static int traducirColumna(int columna) {
+		return columna - 1;
 	}
 
 	/**
