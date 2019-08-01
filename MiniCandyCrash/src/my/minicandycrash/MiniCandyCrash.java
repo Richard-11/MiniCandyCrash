@@ -1,8 +1,6 @@
 package my.minicandycrash;
 
 import java.util.Scanner;
-import static java.lang.Math.random;
-import static java.lang.Math.floor;
 
 /**
  * Juego que consiste en ir haciendo desaparecer tres bloques de 3 o más
@@ -139,6 +137,11 @@ public class MiniCandyCrash {
 	 */
 	private static void jugar(Scanner teclado, int colores, boolean tableroFijo) {
 		int filaInicio, columnaInicio, filaFin, columnaFin;
+		int movimientos = 10;
+		int puntuacion = 0;
+		boolean tableroValido = false;
+		boolean movimientoValido = false;
+		boolean salirDelJuego = false;
 		
 		int[][] tablero = {{2, 1, 1, 1, 1, 1, 1, 1, 1},
 						   {1, 2, 2, 2, 1, 2, 2, 2, 1},
@@ -150,30 +153,44 @@ public class MiniCandyCrash {
 						   {2, 2, 1, 2, 2, 2, 2, 1, 2},
 						   {3, 2, 1, 3, 3, 3, 3, 3, 1}};
 		
-		if(!tableroFijo) {
-			boolean tableroValido = false;
-			
+		if(!tableroFijo) {			
 			while(!tableroValido) {
 				tablero = crearTableroAleatorio(colores);
 				tableroValido = comprobarSiTableroEsValido(tablero);
 			}
 		}
-		
-		imprimirTablero(tablero);
-		
-		// TODO poner bien condición del while. Imprimir el turno de juego.
-		while (true) {
+
+		while(!salirDelJuego && movimientos != 0) {
+			imprimirTablero(tablero, movimientos, puntuacion);
+			
 			do {
 				System.out.print("\nIntroduzca un movimiento (FilaInicio ColumnaInicio FilaFin ColumnaFin): ");
-				filaInicio = traducirFila(teclado.nextInt());
-				columnaInicio = traducirColumna(teclado.nextInt());
-				filaFin = traducirFila(teclado.nextInt());
-				columnaFin = traducirColumna(teclado.nextInt());
-			} while(!comprobarSiMovimientoEsValido(filaInicio, columnaInicio, filaFin, columnaFin));
+				filaInicio = teclado.nextInt();
+				columnaInicio = teclado.nextInt();
+				filaFin = teclado.nextInt();
+				columnaFin = teclado.nextInt();
+				System.out.println();
 
-		
+				if (filaInicio == 0 && columnaInicio == 0 && filaFin == 0 && columnaFin == 0) {
+					salirDelJuego = true;
+				}
+				
+				if (!salirDelJuego) {
+					filaInicio = traducirFila(filaInicio);
+					columnaInicio = traducirColumna(columnaInicio);
+					filaFin = traducirFila(filaFin);
+					columnaFin = traducirColumna(columnaFin);
+					
+					movimientoValido = comprobarSiMovimientoEsValido(filaInicio, columnaInicio, filaFin, columnaFin);
+				}
+			} while(!salirDelJuego && !movimientoValido);
+
 			hacerMovimiento(tablero, filaInicio, columnaInicio, filaFin, columnaFin);
-			imprimirTablero(tablero);
+			movimientos--;
+		}
+		
+		if(movimientos == 0) {
+			imprimirTablero(tablero, movimientos, puntuacion);
 		}
 	}
 
@@ -213,18 +230,13 @@ public class MiniCandyCrash {
 		if((filaInicio < 0 || filaInicio >= FILAS) || (columnaInicio < 0 || columnaInicio >= COLUMNAS) ||
 				(filaFin < 0 || filaFin >= FILAS) || (columnaFin < 0 || columnaFin >= COLUMNAS)) {
 			movimientoValido = false;
-			System.out.println("Coordenadas fuera de limites.");
 		}
 		// Si las coordenadas iniciales son iguales que las coordenadas finales
 		else if(filaInicio == filaFin && columnaInicio == columnaFin) {
 			movimientoValido = false;
-			System.out.println("mismas Coordenadas .");
-
 		}
 		// Borde superior
 		else if(filaInicio == 0) {
-			System.out.println("problema borde superior.");
-
 			if(columnaInicio == 0) {
 				if((filaFin == filaInicio + 1 && columnaFin == columnaInicio) || 
 						(filaFin == filaInicio && columnaFin == columnaInicio + 1)) {
@@ -247,8 +259,6 @@ public class MiniCandyCrash {
 		}
 		// Borde inferior
 		else if(filaInicio == FILAS - 1) {
-			System.out.println("problema borde inferior.");
-
 			if(columnaInicio == 0) {
 				if((filaFin == filaInicio - 1 && columnaFin == columnaInicio) || 
 						(filaFin == filaInicio && columnaFin == columnaInicio + 1)) {
@@ -271,8 +281,6 @@ public class MiniCandyCrash {
 		}
 		// Borde izquierdo
 		else if(columnaInicio == 0) {
-			System.out.println("problema borde izquierdo.");
-
 			if((filaFin == filaInicio && columnaFin == columnaInicio + 1) || 				
 					(filaFin == filaInicio - 1 && columnaFin == columnaInicio) ||
 					(filaFin == filaInicio + 1 && columnaFin == columnaInicio)) {
@@ -281,14 +289,13 @@ public class MiniCandyCrash {
 		}
 		// Borde derecho
 		else if(columnaInicio == COLUMNAS - 1) {
-			System.out.println("problema borde derecho.");
-
 			if((filaFin == filaInicio && columnaFin == columnaInicio - 1) || 				
 					(filaFin == filaInicio - 1 && columnaFin == columnaInicio) ||
 					(filaFin == filaInicio + 1 && columnaFin == columnaInicio)) {
 				movimientoValido = true;
 			}
 		}
+		// Interior
 		else {
 			if((filaInicio == filaFin - 1 && columnaInicio == columnaFin) ||
 					(filaInicio == filaFin + 1 && columnaInicio == columnaFin) ||
@@ -332,7 +339,7 @@ public class MiniCandyCrash {
 	 * 
 	 * @param tablero tablero a imprimir
 	 */
-	private static void imprimirTablero(int[][] tablero) {
+	private static void imprimirTablero(int[][] tablero, int movimientos, int puntuacion) {
 		
 		System.out.print("   ");
 		
@@ -351,6 +358,9 @@ public class MiniCandyCrash {
 			
 			System.out.println();
 		}
+		
+		System.out.printf("\nMOVIMIENTOS: %3d  PUNTUACIÓN: %3d\n", movimientos, puntuacion);
+		System.out.println("\nPARA SALIR DEL JUEGO INTRODUZCA LAS CORDENADAS: 0 0 0 0.");
 	}
 
 	/**
@@ -408,7 +418,6 @@ public class MiniCandyCrash {
 		// Se comprueba que existe alguna jugada posible
 		for(int i = 0; i < tablero.length & !hayJugada; i++) {
 			for(int j = 0; j < tablero[0].length & !hayJugada; j++) {
-				//System.out.println("tablero[" + i + "][" + j + "]");
 				// Borde superior
 				if(i == 0) {
 					if(j == 0) {
@@ -561,7 +570,7 @@ public class MiniCandyCrash {
 			numero2 = aux;
 		}
 		
-		return (int) floor(random() * (numero2 - numero1 + 1) + numero1);
+		return (int) Math.floor(Math.random() * (numero2 - numero1 + 1) + numero1);
 	}
 
 }
