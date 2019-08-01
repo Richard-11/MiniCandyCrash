@@ -65,7 +65,7 @@ import static java.lang.Math.floor;
  */
 
 public class MiniCandyCrash {
-
+	// Para este juego, el mínimo número de filas y columnas debe ser 3.
 	final static int FILAS = 9;
 	final static int COLUMNAS = 9; 
 	
@@ -149,7 +149,8 @@ public class MiniCandyCrash {
 				tableroValido = comprobarSiTableroEsValido(tablero);
 			}
 		}
-		
+		System.out.println(tablero.length);
+		System.out.println(tablero[0].length);
 		imprimirTablero(tablero);
 	}
 
@@ -162,7 +163,7 @@ public class MiniCandyCrash {
 		
 		System.out.print("   ");
 		
-		for(int i = 0; i < tablero.length; i++) {
+		for(int i = 0; i < tablero[0].length; i++) {
 			System.out.printf("%3d", i + 1);
 		}
 		
@@ -234,7 +235,7 @@ public class MiniCandyCrash {
 		// Se comprueba que existe alguna jugada posible
 		for(int i = 0; i < tablero.length & !hayJugada; i++) {
 			for(int j = 0; j < tablero[0].length & !hayJugada; j++) {
-				
+				//System.out.println("tablero[" + i + "][" + j + "]");
 				// Borde superior
 				if(i == 0) {
 					if(j == 0) {
@@ -247,7 +248,7 @@ public class MiniCandyCrash {
 						else if(tablero[i][j] == tablero[i + 1][j] && tablero[i][j] == tablero[i + 2][j + 1]) {
 							hayJugada = true;
 						}
-					} else if(j == tablero.length - 1) {
+					} else if(j == tablero[0].length - 1) {
 						if(tablero[i][j] == tablero[i + 1][j - 1] &&  tablero[i][j] == tablero[i + 2][j - 1]) {
 							hayJugada = true;
 						}
@@ -279,7 +280,7 @@ public class MiniCandyCrash {
 					}
 				}
 				// Borde inferior
-				else if(i == tablero[0].length - 1) {
+				else if(i == tablero.length - 1) {
 					if(j == 0) {
 						if(tablero[i][j] == tablero[i - 1][j + 1] &&  tablero[i][j] == tablero[i - 2][j + 1]) {
 							hayJugada = true;
@@ -290,7 +291,7 @@ public class MiniCandyCrash {
 						else if(tablero[i][j] == tablero[i - 1][j] && tablero[i][j] == tablero[i - 2][j + 1]) {
 							hayJugada = true;
 						}
-					} else if(j == tablero.length - 1) {
+					} else if(j == tablero[0].length - 1) {
 						if(tablero[i][j] == tablero[i - 1][j - 1] &&  tablero[i][j] == tablero[i - 2][j - 1]) {
 							hayJugada = true;
 						}
@@ -328,7 +329,7 @@ public class MiniCandyCrash {
 					}
 				}
 				// Borde derecho
-				else if(j == tablero.length - 1) {
+				else if(j == tablero[0].length - 1) {
 					if(tablero[i][j] == tablero[i - 1][j - 1] && tablero[i][j] == tablero[i + 1][j - 1]) {
 						hayJugada = true;
 					}
