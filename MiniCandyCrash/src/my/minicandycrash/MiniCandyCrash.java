@@ -89,36 +89,34 @@ public class MiniCandyCrash {
 			
 			switch(modo) {
 				case 1:
-					System.out.println("Has seleccionado el Tablero Fácil.");
+					System.out.println("Has seleccionado el Tablero Fácil.\n");
 					colores = 3;
 					tableroFijo = false;
+					jugar(teclado, colores, tableroFijo);
 					break;
 				case 2: 
-					System.out.println("Has seleccionado el Tablero Intermedio.");
+					System.out.println("Has seleccionado el Tablero Intermedio.\n");
 					colores = 4;
 					tableroFijo = false;
+					jugar(teclado, colores, tableroFijo);
 					break;
 				case 3: 
-					System.out.println("Has seleccionado el Tablero Difícil.");
+					System.out.println("Has seleccionado el Tablero Difícil.\n");
 					colores = 5;
 					tableroFijo = false;
+					jugar(teclado, colores, tableroFijo);
 					break;
 				case 4: 
-					System.out.println("Has seleccionado el Tablero fijo.");
+					System.out.println("Has seleccionado el Tablero fijo.\n");
 					colores = 3;
 					tableroFijo = true;
+					jugar(teclado, colores, tableroFijo);
 					break;
 				case 0: 
-					System.out.println("¡Hasta la próxima!");
+					System.out.println("¡Hasta la próxima!\n");
 					break;
 				default:
-					System.out.println("Por favor, seleccione una opción válida.");
-			}
-			
-			System.out.println();
-			
-			if(modo == 1 || modo == 2 || modo == 3 || modo == 4) {
-				jugar(teclado, colores, tableroFijo);
+					System.out.println("Por favor, seleccione una opción válida.\n");
 			}
 			
 			System.out.println("\n");
@@ -260,9 +258,8 @@ public class MiniCandyCrash {
 		int posicionSiguiente;
 		int tamBloque = 1;
 		boolean hayBloque = false;
-		boolean reiniciarContBloque = true;
 
-		for(int i = 0; i < tablero.length & reiniciarContBloque; i++) {
+		for(int i = 0; i < tablero.length; i++) {
 			posicionSiguiente = tablero[i][columna];
 		
 			if(posicionActual == posicionSiguiente) {
@@ -270,13 +267,11 @@ public class MiniCandyCrash {
 			}
 			else {
 				if(tamBloque >= 3) {
-					reiniciarContBloque = false;
+					break;
 				}
 			
-				if(reiniciarContBloque) {
-					tamBloque = 1;
-					posicionActual = posicionSiguiente;
-				}
+				tamBloque = 1;
+				posicionActual = posicionSiguiente;
 			}
 		
 			if(tamBloque >= 3) {
@@ -303,11 +298,8 @@ public class MiniCandyCrash {
 		int inicioBloque = 0;
 		int finBloque = 0;
 		int limiteSuperior = 0;
-		boolean reiniciarContBloque = true;
-		boolean tableroValido = false;
 
-		// FIXME Arreglar problema con la ruta de escape
-		for(int i = 0; i < tablero.length && reiniciarContBloque; i++) {
+		for(int i = 0; i < tablero.length; i++) {
 			posicionSiguiente = tablero[i][columna];
 		
 			if(posicionActual == posicionSiguiente) {
@@ -315,46 +307,34 @@ public class MiniCandyCrash {
 			}
 			else {
 				if(tamBloque >= 3) {
-					reiniciarContBloque = false;
+					break;
 				}
 			
-				if(reiniciarContBloque) {
-					tamBloque = 1;
-					posicionActual = posicionSiguiente;
-				}
+				tamBloque = 1;
+				posicionActual = posicionSiguiente;
 			}
-			System.out.println("i = " + i);
+			
 			finBloque = i;
 		}
 	
 		limiteSuperior = finBloque + 1;
 		inicioBloque = limiteSuperior - tamBloque;
 	
-		System.out.println("Bloque de tamaño = " + tamBloque);
-		System.out.println("finBloque = " + finBloque);
-		System.out.println("inicioBloque = " + inicioBloque);
-		System.out.println("limite Superior = " + limiteSuperior);
-	
-		while(!tableroValido) {
-			if(inicioBloque == 0) {
+		if(inicioBloque == 0) {
 				for(int i = 0; i < tamBloque; i++) {
 					tablero[i][columna] = generarNumeroAleatorio(1, colores);
 				}
-			} 
-			else if(inicioBloque > 0) {
-				for(int i = 0; i <inicioBloque; i++) {
-					tablero[finBloque - i][columna] = tablero[finBloque - i - tamBloque][columna];
-				}
-				
-				int diferencia = limiteSuperior - inicioBloque;
-				
-				for(int i = 0; i < diferencia; i++) {
-					tablero[i][columna] = generarNumeroAleatorio(1, colores);
-				}
+		} 
+		else if(inicioBloque > 0) {
+			for(int i = 0; i <inicioBloque; i++) {
+				tablero[finBloque - i][columna] = tablero[finBloque - i - tamBloque][columna];
 			}
 			
-			tableroValido = comprobarSiTableroEsValido(tablero);
-			//System.out.println("El tablero es " + (tableroValido ? "valido" : "invalido"));
+			int diferencia = limiteSuperior - inicioBloque;
+			
+			for(int i = 0; i < diferencia; i++) {
+				tablero[i][columna] = generarNumeroAleatorio(1, colores);
+			}
 		}
 		
 		return tamBloque;
@@ -383,6 +363,7 @@ public class MiniCandyCrash {
 	 * Se comprueba si el movimiento a realizar es válido teniendo en cuenta las condiciones del enunciado. 
 	 * Se comprueba que las filas y columnas no superen los límites del tablero, que no se pueda realizar un 
 	 * movimiento hasta la misma posición y que los movimientos solo puedan ser contiguos, vertical u horizontalmente.
+	 * @param tablero tablero donde se comprueba el movimiento
 	 * @param filaInicio fila inicial
 	 * @param columnaInicio columna inicial
 	 * @param filaFin fila final
@@ -483,6 +464,7 @@ public class MiniCandyCrash {
 	 * Devuelve el verdadero valor de la fila, que es distinto del valor que aparece representado en el tablero y es
 	 * con el que se trabaja internamente.
 	 * 
+	 * @param tablero tablero de juego
 	 * @param fila fila a traducir
 	 * @return valor de la fila traducido a su verdadero valor
 	 */
