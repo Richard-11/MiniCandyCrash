@@ -138,10 +138,15 @@ public class MiniCandyCrash {
 	private static void jugar(Scanner teclado, int colores, boolean tableroFijo) {
 		int filaInicio, columnaInicio, filaFin, columnaFin;
 		int movimientos = 10;
+		int tamBloque = 0;
 		int puntuacion = 0;
+		int bloqueColumnaInicio;
+		int bloqueColumnaFin;
 		boolean tableroValido = false;
 		boolean movimientoValido = false;
 		boolean salirDelJuego = false;
+		boolean bloqueEnInicio;
+		boolean bloqueEnFin = false;
 		
 		int[][] tablero = {{2, 1, 1, 1, 1, 1, 1, 1, 1},
 						   {1, 2, 2, 2, 1, 2, 2, 2, 1},
@@ -176,22 +181,183 @@ public class MiniCandyCrash {
 				}
 				
 				if (!salirDelJuego) {
-					filaInicio = traducirFila(filaInicio);
+					filaInicio = traducirFila(tablero, filaInicio);
 					columnaInicio = traducirColumna(columnaInicio);
-					filaFin = traducirFila(filaFin);
+					filaFin = traducirFila(tablero, filaFin);
 					columnaFin = traducirColumna(columnaFin);
 					
-					movimientoValido = comprobarSiMovimientoEsValido(filaInicio, columnaInicio, filaFin, columnaFin);
+					movimientoValido = comprobarSiMovimientoEsValido(tablero, filaInicio, columnaInicio, filaFin, columnaFin);
 				}
 			} while(!salirDelJuego && !movimientoValido);
 
 			hacerMovimiento(tablero, filaInicio, columnaInicio, filaFin, columnaFin);
 			movimientos--;
+			
+			while((bloqueEnInicio = hayBloque(tablero, columnaInicio, colores)) 
+					|| (bloqueEnFin = hayBloque(tablero, columnaFin, colores))) {
+
+				if(bloqueEnInicio) {
+					bloqueColumnaInicio = getBloque(tablero, columnaInicio, colores);
+					tamBloque = bloqueColumnaInicio;
+				}
+				else if(bloqueEnFin) {
+					bloqueColumnaFin = getBloque(tablero, columnaFin, colores);
+					tamBloque = bloqueColumnaFin;
+				}
+				
+				puntuacion += calcularPuntuacion(tamBloque);
+			}
 		}
 		
 		if(movimientos == 0) {
 			imprimirTablero(tablero, movimientos, puntuacion);
 		}
+		
+		System.out.println("\n¡FIN DEL JUEGO!");
+		System.out.printf("HAS CONSEGUIDO: %3d PUNTOS.", puntuacion);
+	}
+
+	/**
+	 * Devuelve una puntuación u otra, dependiendo del tamaño de bloque que se pasa como parámetro.
+	 * 
+	 * @param tamBloque tamaño del bloque
+	 * @return la puntuación que le pertenece según el tamaño de bloque
+	 */
+	private static int calcularPuntuacion(int tamBloque) {
+		int puntuacion = 0;
+		
+		switch(tamBloque) {
+			case 3:
+				puntuacion = 10;
+				break;
+			case 4:
+				puntuacion = 20;
+				break;
+			case 5:
+				puntuacion = 30;
+				break;
+			case 6:
+				puntuacion = 40;
+				break;
+			case 7:
+				puntuacion = 50;
+				break;
+		}
+		
+		return puntuacion;
+	}
+
+	/**
+	 * Comprueba que existe bloque en una determinada columna del tablero.
+	 * 
+	 * @param tablero tablero en el que se examina si existe bloque
+	 * @param columna columna concreta del tablero en la que se examina si hay bloque
+	 * @param colores colores de bola distinto según el modo de juego
+	 * @return {@code true} si existe bloque y {@code false} si no existe bloque.
+	 */
+	private static boolean hayBloque(int[][] tablero, int columna, int colores) {
+		int posicionActual = -1;
+		int posicionSiguiente;
+		int tamBloque = 1;
+		boolean hayBloque = false;
+		boolean reiniciarContBloque = true;
+
+		for(int i = 0; i < tablero.length & reiniciarContBloque; i++) {
+			posicionSiguiente = tablero[i][columna];
+		
+			if(posicionActual == posicionSiguiente) {
+				tamBloque++;
+			}
+			else {
+				if(tamBloque >= 3) {
+					reiniciarContBloque = false;
+				}
+			
+				if(reiniciarContBloque) {
+					tamBloque = 1;
+					posicionActual = posicionSiguiente;
+				}
+			}
+		
+			if(tamBloque >= 3) {
+				hayBloque = true;
+			}
+		}
+		
+		return hayBloque;
+	}
+
+	/**
+	 * Devuelve el tamaño del bloque y reajusta el tablero, teniendo en cuenta las bolas que se borran y las que se
+	 * añaden aleatoriamente.
+	 * 
+	 * @param tablero tablero a reajustar
+	 * @param columna columna en la que se encuentra el bloque
+	 * @param colores colores de bola distinto según el modo de juego
+	 * @return el tamaño del bloque
+	 */
+	private static int getBloque(int[][] tablero, int columna, int colores) {
+		int posicionActual = -1;
+		int posicionSiguiente;
+		int tamBloque = 1;
+		int inicioBloque = 0;
+		int finBloque = 0;
+		int limiteSuperior = 0;
+		boolean reiniciarContBloque = true;
+		boolean tableroValido = false;
+
+		// FIXME Arreglar problema con la ruta de escape
+		for(int i = 0; i < tablero.length && reiniciarContBloque; i++) {
+			posicionSiguiente = tablero[i][columna];
+		
+			if(posicionActual == posicionSiguiente) {
+				tamBloque++;
+			}
+			else {
+				if(tamBloque >= 3) {
+					reiniciarContBloque = false;
+				}
+			
+				if(reiniciarContBloque) {
+					tamBloque = 1;
+					posicionActual = posicionSiguiente;
+				}
+			}
+			System.out.println("i = " + i);
+			finBloque = i;
+		}
+	
+		limiteSuperior = finBloque + 1;
+		inicioBloque = limiteSuperior - tamBloque;
+	
+		System.out.println("Bloque de tamaño = " + tamBloque);
+		System.out.println("finBloque = " + finBloque);
+		System.out.println("inicioBloque = " + inicioBloque);
+		System.out.println("limite Superior = " + limiteSuperior);
+	
+		while(!tableroValido) {
+			if(inicioBloque == 0) {
+				for(int i = 0; i < tamBloque; i++) {
+					tablero[i][columna] = generarNumeroAleatorio(1, colores);
+				}
+			} 
+			else if(inicioBloque > 0) {
+				for(int i = 0; i <inicioBloque; i++) {
+					tablero[finBloque - i][columna] = tablero[finBloque - i - tamBloque][columna];
+				}
+				
+				int diferencia = limiteSuperior - inicioBloque;
+				
+				for(int i = 0; i < diferencia; i++) {
+					tablero[i][columna] = generarNumeroAleatorio(1, colores);
+				}
+			}
+			
+			tableroValido = comprobarSiTableroEsValido(tablero);
+			//System.out.println("El tablero es " + (tableroValido ? "valido" : "invalido"));
+		}
+		
+		return tamBloque;
 	}
 
 	/**
@@ -224,11 +390,12 @@ public class MiniCandyCrash {
 	 * 
 	 * @return {@code true} si el movimiento es válido y {@code false} si no lo es
 	 */
-	private static boolean comprobarSiMovimientoEsValido(int filaInicio, int columnaInicio, int filaFin, int columnaFin) {
+	
+	private static boolean comprobarSiMovimientoEsValido(int[][] tablero, int filaInicio, int columnaInicio, int filaFin, int columnaFin) {
 		boolean movimientoValido = false;
 		
-		if((filaInicio < 0 || filaInicio >= FILAS) || (columnaInicio < 0 || columnaInicio >= COLUMNAS) ||
-				(filaFin < 0 || filaFin >= FILAS) || (columnaFin < 0 || columnaFin >= COLUMNAS)) {
+		if((filaInicio < 0 || filaInicio >= tablero.length) || (columnaInicio < 0 || columnaInicio >= tablero[0].length) ||
+				(filaFin < 0 || filaFin >= tablero.length) || (columnaFin < 0 || columnaFin >= tablero[0].length)) {
 			movimientoValido = false;
 		}
 		// Si las coordenadas iniciales son iguales que las coordenadas finales
@@ -243,7 +410,7 @@ public class MiniCandyCrash {
 					movimientoValido = true;
 				}
 			}
-			else if(columnaInicio == COLUMNAS - 1) {
+			else if(columnaInicio == tablero[0].length - 1) {
 				if((filaFin == filaInicio + 1 && columnaFin == columnaInicio) || 
 						(filaFin == filaInicio && columnaFin == columnaInicio - 1)) {
 					movimientoValido = true;
@@ -258,14 +425,14 @@ public class MiniCandyCrash {
 			}
 		}
 		// Borde inferior
-		else if(filaInicio == FILAS - 1) {
+		else if(filaInicio == tablero.length - 1) {
 			if(columnaInicio == 0) {
 				if((filaFin == filaInicio - 1 && columnaFin == columnaInicio) || 
 						(filaFin == filaInicio && columnaFin == columnaInicio + 1)) {
 					movimientoValido = true;
 				}
 			}
-			else if(columnaInicio == COLUMNAS - 1) {
+			else if(columnaInicio == tablero[0].length - 1) {
 				if((filaFin == filaInicio - 1 && columnaFin == columnaInicio) || 
 						(filaFin == filaInicio && columnaFin == columnaInicio - 1)) {
 					movimientoValido = true;
@@ -288,7 +455,7 @@ public class MiniCandyCrash {
 			}
 		}
 		// Borde derecho
-		else if(columnaInicio == COLUMNAS - 1) {
+		else if(columnaInicio == tablero[0].length - 1) {
 			if((filaFin == filaInicio && columnaFin == columnaInicio - 1) || 				
 					(filaFin == filaInicio - 1 && columnaFin == columnaInicio) ||
 					(filaFin == filaInicio + 1 && columnaFin == columnaInicio)) {
@@ -297,10 +464,10 @@ public class MiniCandyCrash {
 		}
 		// Interior
 		else {
-			if((filaInicio == filaFin - 1 && columnaInicio == columnaFin) ||
-					(filaInicio == filaFin + 1 && columnaInicio == columnaFin) ||
-					(filaInicio == filaFin && columnaInicio == columnaFin - 1) ||
-					(filaInicio == filaFin && columnaInicio == columnaInicio + 1)) {
+			if((filaFin == filaInicio - 1 && columnaFin == columnaInicio) ||
+					(filaFin == filaInicio + 1 && columnaFin == columnaInicio) ||
+					(filaFin == filaInicio && columnaFin == columnaInicio - 1) ||
+					(filaFin == filaInicio && columnaFin == columnaInicio + 1)) {
 				movimientoValido = true;
 			}
 		}
@@ -319,8 +486,8 @@ public class MiniCandyCrash {
 	 * @param fila fila a traducir
 	 * @return valor de la fila traducido a su verdadero valor
 	 */
-	private static int traducirFila(int fila) {
-		return FILAS - fila;
+	private static int traducirFila(int[][] tablero, int fila) {
+		return tablero.length - fila;
 	}
 
 	/**
